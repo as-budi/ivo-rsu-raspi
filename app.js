@@ -20,7 +20,7 @@ const API_getETA = process.env.API_GET_ETA;
 const API_busInsertLocation = process.env.API_INSERT_BUS_LOCATION;
 const tresholdHour = Number(process.env.TRESHOLD_HOUR);
 const nodeID = busStopObj.nodeID;
-const scannedBLE = "f2ab73195979";
+// const scannedBLE = "f2ab73195979";
 
 async function getETA(busID, serviceNo, routeID, busStopID){
   const postData = JSON.stringify({
@@ -75,9 +75,14 @@ async function busInsertLocation(postData){
   } catch (error) {
       console.log(error.response["data"]);
   }
+  scanner.startScan().then(() => {
+    console.log('Started to scan.');
+  }).catch((error) => {
+    console.error(error);
+  });
 }
 
-async function checkAndSendData(){
+async function checkAndSendData(scannedBLE){
   if(await getETA(busObj.bleID[scannedBLE].busID, busStopObj.serviceNo, busStopObj.busRoutes.go, busStopObj.busStopID[nodeID.toString()].go)){
     const postData = JSON.stringify({
       bus_id: busObj.bleID[scannedBLE].busID,
@@ -130,25 +135,29 @@ async function checkAndSendData(){
   }
 }
 
+// checkAndSendData();
 
-console.log(Object.keys(busObj.bleID));
-if (Object.keys(busObj.bleID).includes(scannedBLE)) console.log('OK');
+// console.log(Object.keys(busObj.bleID));
+// if (Object.keys(busObj.bleID).includes(scannedBLE)) console.log('OK');
 
 
-// scanner.onadvertisement = (ad) => {
-//   if (Object.keys(busObj.bleID).includes(ad["id"])){
-//     console.log('iBeacon of the bus is found!')
-//     checkAndSendData();
-//   }
-//   else console.log('Beacon detected, but not the Bus!')
-// };
+scanner.onadvertisement = (ad) => {
+  scanner.stopScan();
+  console.log(ad);
+  const scannedBLE = ad["id"];
+  if (Object.keys(busObj.bleID).includes(scannedBLE)){
+    console.log('iBeacon of the bus is found!')
+    checkAndSendData(scannedBLE);
+  }
+  else console.log('Beacon detected, but not the Bus!')
+};
 
-// // Start scanning
-// scanner.startScan().then(() => {
-//     console.log('Started to scan.')  ;
-// }).catch((error) => {
-//     console.error(error);
-// });
+// Start scanning
+scanner.startScan().then(() => {
+    console.log('Started to scan.');
+}).catch((error) => {
+    console.error(error);
+});
 
 // const deviceList = [
 //   "f2ab73195979",                 
