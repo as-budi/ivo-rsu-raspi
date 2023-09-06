@@ -1,20 +1,8 @@
-// const BeaconScanner = require('node-beacon-scanner');
-// const scanner = new BeaconScanner();
-// const https = require('https');
-// const axios = require('axios');
-// const mqtt = require('mqtt')
-// const fs = require('fs');
-// const { error } = require('console');
-// require('dotenv').config();
-// var isOnline = require('is-online');
-
 import BeaconScanner from 'node-beacon-scanner';
 const scanner = new BeaconScanner();
-import https from 'https';
 import axios from 'axios';
 import mqtt from 'mqtt';
 import fs from 'fs';
-import { error } from 'console';
 import dotenv from 'dotenv';
 dotenv.config();
 import isOnline from 'is-online';
