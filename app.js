@@ -6,7 +6,7 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 dotenv.config();
 import isOnline from 'is-online';
-import simpleGit from 'simple-git';
+import { simpleGit } from 'simple-git';
 
 const ca = fs.readFileSync(process.env.CA, 'utf8');
 const cert = fs.readFileSync(process.env.CERT, 'utf8');
@@ -23,10 +23,19 @@ const tresholdHour = Number(process.env.TRESHOLD_HOUR);
 const nodeID = busStopObj.nodeID;
 const heartBeatInterval = process.env.HEARTBEAT_INTERVAL;
 const updateTopic = process.env.UPDATE_TOPIC;
-const git = simpleGit.default()
-// const scannedBLE = "f2ab73195979";
+
+const options = {
+  baseDir: process.cwd(),
+  binary: 'git',
+  maxConcurrentProcesses: 6,
+  trimmed: false,
+};
+
+const git = simpleGit(options);
+
 
 function run(){
+  console.log(process.cwd());
   async function updateApp(){
     await git.pull();
   }
@@ -200,6 +209,8 @@ function run(){
         client.publish(topic, json, { qos: 0, retain: false }, (error) => {
             if (error){
                 console.log(error)
+            }else{
+              console.log('Send the telemetry:', json);
             }
         })
     }
