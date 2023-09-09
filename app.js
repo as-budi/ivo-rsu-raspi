@@ -6,7 +6,8 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 dotenv.config();
 import isOnline from 'is-online';
-import { simpleGit } from 'simple-git';
+import shell from 'shelljs';
+
 
 const ca = fs.readFileSync(process.env.CA, 'utf8');
 const cert = fs.readFileSync(process.env.CERT, 'utf8');
@@ -24,20 +25,14 @@ const nodeID = busStopObj.nodeID;
 const heartBeatInterval = process.env.HEARTBEAT_INTERVAL;
 const updateTopic = process.env.UPDATE_TOPIC;
 
-const options = {
-  baseDir: process.cwd(),
-  binary: 'git',
-  maxConcurrentProcesses: 6,
-  trimmed: false,
-};
-
-const git = simpleGit(options);
-
 
 function run(){
   console.log(process.cwd());
   async function updateApp(){
-    await git.pull();
+    if (shell.exec('git pull').code !== 0){
+      shell.echo('Error: Git pull failed');
+      shell.exit(1);
+    }
   }
 
   const mqttOptions = {
