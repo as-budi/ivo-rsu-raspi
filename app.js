@@ -28,12 +28,20 @@ const updateTopic = process.env.UPDATE_TOPIC;
 
 function run(){
   console.log(process.cwd());
+  async function restartApp(){
+    if (shell.exec('pm2 restart app.js').code !== 0){
+      shell.echo('Error: error restart App');
+      shell.exit(1);
+    };
+  };
+
   async function updateApp(){
-    if (shell.exec('git pull').code !== 0){
+    if (await shell.exec('git pull').code !== 0){
       shell.echo('Error: Git pull failed');
       shell.exit(1);
     }
-  }
+    await restartApp();
+  };
 
   const mqttOptions = {
     host: endpoint,
