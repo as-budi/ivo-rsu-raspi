@@ -1,8 +1,7 @@
 {
     "bleID":{
         "f2ab73195979":{
-            "busID":33,
-            "bleAddress":"f2:ab:73:19:59:79"
+            "busID":33
         }
     }
 }
