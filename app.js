@@ -36,7 +36,6 @@ function run(){
 
   async function updateApp(){
     if (await shell.exec('git pull').code !== 0){
-      shell.echo('Error: Git pull failed');
       shell.exit(1);
     }
     await restartApp();
