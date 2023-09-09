@@ -6,6 +6,7 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 dotenv.config();
 import isOnline from 'is-online';
+import simpleGit from 'simple-git';
 
 const ca = fs.readFileSync(process.env.CA, 'utf8');
 const cert = fs.readFileSync(process.env.CERT, 'utf8');
@@ -21,9 +22,15 @@ const API_busInsertLocation = process.env.API_INSERT_BUS_LOCATION;
 const tresholdHour = Number(process.env.TRESHOLD_HOUR);
 const nodeID = busStopObj.nodeID;
 const heartBeatInterval = process.env.HEARTBEAT_INTERVAL;
+const updateTopic = process.env.UPDATE_TOPIC;
+const git = simpleGit.default()
 // const scannedBLE = "f2ab73195979";
 
 function run(){
+  async function updateApp(){
+    await git.pull();
+  }
+
   const mqttOptions = {
     host: endpoint,
     protocol: "mqtt",
@@ -201,8 +208,20 @@ function run(){
   const client = mqtt.connect(mqttOptions);
 
   client.on('connect', function () {
-      console.log("Connected to AWS IoT Core!")
-  })
+      console.log("Connected to AWS IoT Core!");
+      client.subscribe([updateTopic], () => {
+        console.log(`Subscribe to topic '${updateTopic}'`);
+      })
+  });
+
+  client.on('message', (topic, payload) => {
+    console.log('Receive Message: ', topic, payload.toString());
+    const getData = JSON.parse(payload.toString());
+    if (getData["message"] === 1){
+      console.log('Update Data!!!');
+      updateApp();
+    }
+  });
 
   setInterval(heartBeat, heartBeatInterval);
 
