@@ -30,7 +30,6 @@ function run(){
   console.log(process.cwd());
   async function restartApp(){
     if (shell.exec('pm2 restart app.js').code !== 0){
-      shell.echo('Error: error restart App');
       shell.exit(1);
     };
   };
