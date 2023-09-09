@@ -96,7 +96,7 @@ function run(){
     });
   }
 
-  async function checkAndSendData(scannedBLE, proximityUUID, rssi, txPower){
+  async function checkAndSendData(scannedBLE, bleAddress, proximityUUID, rssi, txPower){
 
     var temp = fs.readFileSync("/sys/class/thermal/thermal_zone0/temp");
     var temp_c = temp/1000;
@@ -107,7 +107,7 @@ function run(){
     const msg = {
       timestamp: sampleTime,
       deviceID: busStopObj.busStopID[nodeID.toString()].go.toString(),
-      bleAddress: busObj.bleID[scannedBLE].bleAddress,
+      bleAddress: bleAddress,
       proximityUUID: proximityUUID,
       rssi: rssi,
       txPower: txPower,
@@ -127,7 +127,7 @@ function run(){
       const postData = JSON.stringify({
         bus_id: busObj.bleID[scannedBLE].busID,
         route_id: busStopObj.busRoutes.go,
-        imei: busObj.bleID[scannedBLE].bleAddress,
+        imei: bleAddress,
         latlong: busStopObj.coordinate[nodeID.toString()],
         speed: 10
       });
@@ -139,7 +139,7 @@ function run(){
         const postData = JSON.stringify({
           bus_id: busObj.bleID[scannedBLE].busID,
           route_id: busStopObj.busRoutes.back,
-          imei: busObj.bleID[scannedBLE].bleAddress,
+          imei: bleAddress,
           latlong: busStopObj.coordinate[nodeID.toString()],
           speed: 10
         });
@@ -153,7 +153,7 @@ function run(){
           const postData = JSON.stringify({
             bus_id: busObj.bleID[scannedBLE].busID,
             route_id: busStopObj.busRoutes.go,
-            imei: busObj.bleID[scannedBLE].bleAddress,
+            imei: bleAddress,
             latlong: busStopObj.coordinate[nodeID.toString()],
             speed: 10
           });
@@ -164,7 +164,7 @@ function run(){
           const postData = JSON.stringify({
             bus_id: busObj.bleID[scannedBLE].busID,
             route_id: busStopObj.busRoutes.back,
-            imei: busObj.bleID[scannedBLE].bleAddress,
+            imei: bleAddress,
             latlong: busStopObj.coordinate[nodeID.toString()],
             speed: 10
           });
@@ -210,13 +210,14 @@ function run(){
     scanner.stopScan();
     console.log(ad);
     const scannedBLE = ad["id"];
+    const bleAddress = ad["bleAddress"];
     const proximityUUID = ad["iBeacon"]["uuid"];
     const rssi = ad["rssi"];
     const txPower = ad["iBeacon"]["txPower"];
 
     if (Object.keys(busObj.bleID).includes(scannedBLE)){
       console.log('iBeacon of the bus is found!')
-      checkAndSendData(scannedBLE, proximityUUID, rssi, txPower);
+      checkAndSendData(scannedBLE, bleAddress, proximityUUID, rssi, txPower);
     }
     else console.log('Beacon detected, but not the Bus!')
   };
