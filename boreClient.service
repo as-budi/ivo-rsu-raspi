@@ -1,0 +1,14 @@
+[Unit]
+Description=Bore Client
+Wants=network-online.target
+After=network.target network-online.target
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi
+ExecStart=/home/pi/.cargo/bin/bore local 22 --to 54.169.36.133 --port 9001
+Restart=always
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
