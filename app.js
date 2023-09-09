@@ -18,10 +18,12 @@ const bus = fs.readFileSync(process.env.BUS,'utf8');
 const busObj = JSON.parse(bus);
 const busStop = fs.readFileSync(process.env.BUS_STOP,'utf8');
 const busStopObj = JSON.parse(busStop);
+const rsuID = fs.readFileSync(process.env.NODE_ID,'utf8');
+const rsuIDObj = JSON.parse(rsuID);
 const API_getETA = process.env.API_GET_ETA;
 const API_busInsertLocation = process.env.API_INSERT_BUS_LOCATION;
 const tresholdHour = Number(process.env.TRESHOLD_HOUR);
-const nodeID = busStopObj.nodeID;
+const nodeID = rsuIDObj.nodeID;
 const heartBeatInterval = process.env.HEARTBEAT_INTERVAL;
 const updateTopic = process.env.UPDATE_TOPIC;
 
