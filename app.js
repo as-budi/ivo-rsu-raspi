@@ -20,6 +20,7 @@ const API_getETA = process.env.API_GET_ETA;
 const API_busInsertLocation = process.env.API_INSERT_BUS_LOCATION;
 const tresholdHour = Number(process.env.TRESHOLD_HOUR);
 const nodeID = busStopObj.nodeID;
+const heartBeatInterval = process.env.HEARTBEAT_INTERVAL;
 // const scannedBLE = "f2ab73195979";
 
 function run(){
@@ -203,7 +204,7 @@ function run(){
       console.log("Connected to AWS IoT Core!")
   })
 
-  setInterval(heartBeat, 10000);
+  setInterval(heartBeat, heartBeatInterval);
 
   scanner.onadvertisement = (ad) => {
     scanner.stopScan();
