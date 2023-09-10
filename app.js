@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import isOnline from 'is-online';
 import shell from 'shelljs';
+// import { randomInt } from 'crypto';
 
 
 const ca = fs.readFileSync(process.env.CA, 'utf8');
@@ -27,6 +28,10 @@ const nodeID = rsuIDObj.nodeID;
 const heartBeatInterval = process.env.HEARTBEAT_INTERVAL;
 const updateTopic = process.env.UPDATE_TOPIC;
 
+const telemetryToken = busStopObj.telemetryToken[nodeID.toString()].toString();
+const telemetryURL = process.env.API_TELEMETRY;
+
+console.log('telemetryToken: ', telemetryToken);
 
 function run(){
   console.log(process.cwd());
@@ -94,6 +99,28 @@ function run(){
     else return false;
   }
 
+  async function sendTelemetry(telemetryData){
+    console.log('telemetryToken: ', telemetryToken);
+    if(telemetryToken === "-"){
+      console.log('Telemetry data is not sent -> RSU does not has ACCESS_TOKEN!')
+    }
+    else{
+      const API_telemetry = telemetryURL.replace("$ACCESS_TOKEN", telemetryToken); 
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      };
+      try {
+        const response = await axios.post(API_telemetry, telemetryData, options);
+        console.log('Send telemetry data to thingsboard: ', telemetryData);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+  
   async function busInsertLocation(postData){
     const options = {
         method: 'POST',
@@ -119,6 +146,8 @@ function run(){
 
     var temp = fs.readFileSync("/sys/class/thermal/thermal_zone0/temp");
     var temp_c = temp/1000;
+
+    // var temp_c = randomInt(25, 40);
 
     const date = new Date();
     var sampleTime = date.getTime();
@@ -198,16 +227,26 @@ function run(){
     var temp = fs.readFileSync("/sys/class/thermal/thermal_zone0/temp");
     var temp_c = temp/1000;
 
+    // var temp_c = randomInt(25, 40);
+
     const date = new Date();
     var sampleTime = date.getTime();
 
-    const msg = {
+    const msg1 = {
+      internet: 1,
+      node: 1, 
+      temperature: temp_c
+    };
+    const telemetryData = JSON.stringify(msg1);
+    sendTelemetry(telemetryData);
+
+    const msg2 = {
       timestamp: sampleTime,
       deviceID: busStopObj.busStopID[nodeID.toString()].go.toString(),
       heartBeat: 1,
       raspiTemp: temp_c
     };
-    const json = JSON.stringify(msg);
+    const json = JSON.stringify(msg2);
     if (client){
         client.publish(topic, json, { qos: 0, retain: false }, (error) => {
             if (error){
@@ -218,6 +257,8 @@ function run(){
         })
     }
   }
+
+  setInterval(heartBeat, heartBeatInterval);
 
   const client = mqtt.connect(mqttOptions);
 
@@ -236,8 +277,6 @@ function run(){
       updateApp();
     }
   });
-
-  setInterval(heartBeat, heartBeatInterval);
 
   scanner.onadvertisement = (ad) => {
     scanner.stopScan();
