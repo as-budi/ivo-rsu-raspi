@@ -81,13 +81,13 @@ function run(){
       };
     try {
       const response = await axios.post(API_getETA, postData, options);
-      var etaStatus = response.status;
+      // var etaStatus = response.status;
       var etaData = response.data;
     } catch (error) {
-      var etaStatus = error.response["status"];
+      // var etaStatus = error.response["status"];
       var etaData = error.response["data"];
     }
-    console.log(etaStatus);
+    // console.log(etaStatus);
     console.log(etaData);
 
     const sData = JSON.stringify(etaData);
