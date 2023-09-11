@@ -336,14 +336,10 @@ async function onlineCheck(){
   }
   else{
     console.error('Retrying to connect...');
-    await onlineCheck();
-    i += 1;
-    if(i === 5){
+    //await onlineCheck();
       if(shell.exec('pm2 restart app.js').code !== 0){
         shell.exit(1);
       };
-      i = 0;
-    }
   }
 };
 
