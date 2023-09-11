@@ -35,10 +35,6 @@ console.log('telemetryToken: ', telemetryToken);
 
 function run(){
 
-  if (shell.exec('sudo systemctl restart boreClient.service').code !== 0){
-    shell.exit(1);
-  };
-
   console.log(process.cwd());
   async function restartApp(){
     if (shell.exec('pm2 restart app.js').code !== 0){
@@ -274,7 +270,10 @@ function run(){
       console.log("Connected to AWS IoT Core!");
       client.subscribe([updateTopic], () => {
         console.log(`Subscribe to topic '${updateTopic}'`);
-      })
+      });
+      if (shell.exec('sudo systemctl restart boreClient.service').code !== 0){
+        shell.exit(1);
+      };
   });
 
   client.on('message', (topic, payload) => {
