@@ -292,9 +292,9 @@ function run(){
       client.subscribe([updateTopic], () => {
         console.log(`Subscribe to topic '${updateTopic}'`);
       });
-      if (shell.exec('sudo systemctl restart boreClient.service').code !== 0){
-        shell.exit(1);
-      };
+      // if (shell.exec('sudo systemctl restart boreClient.service').code !== 0){
+      //   shell.exit(1);
+      // };
   });
 
   client.on('message', (topic, payload) => {
