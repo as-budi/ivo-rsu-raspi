@@ -82,7 +82,7 @@ function run(){
     try {
       const response = await axios.post(API_getETA, postData, options);
       try {
-        var etaStatus = 400;
+        var etaStatus = response.status;
         var etaData = response.data;
       } catch (error) {
         console.log(error);
@@ -137,9 +137,6 @@ function run(){
         console.log(error);
       }
     }
-    if(shell.exec('pm2 restart app.js').code !== 0){
-      shell.exit(1);
-    };
   }
   
   async function busInsertLocation(postData){
@@ -277,7 +274,10 @@ function run(){
             }
         })
     }
-  }
+    if(shell.exec('pm2 restart app.js').code !== 0){
+      shell.exit(1);
+    };
+  };
 
   setInterval(heartBeat, heartBeatInterval);
 
