@@ -44,6 +44,9 @@ function run(){
     if (shell.exec('pm2 restart app.js').code !== 0){
       shell.exit(1);
     };
+    if (shell.exec('sudo systemctl restart boreClient.service').code !== 0){
+      shell.exit(1);
+    };
   };
 
   async function updateApp(){
