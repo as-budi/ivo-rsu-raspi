@@ -37,6 +37,7 @@ function run(){
 
   console.log(process.cwd());
   async function restartApp(){
+    console.log('Restarting...')
     if (shell.exec('sudo systemctl restart boreClient.service').code !== 0){
       shell.exit(1);
     };
