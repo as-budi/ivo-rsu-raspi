@@ -26,6 +26,7 @@ const API_busInsertLocation = process.env.API_INSERT_BUS_LOCATION;
 const tresholdHour = Number(process.env.TRESHOLD_HOUR);
 const nodeID = rsuIDObj.nodeID;
 const heartBeatInterval = process.env.HEARTBEAT_INTERVAL;
+const autorestartPeriod = process.env.AUTORESTART_PERIOD;
 const updateTopic = process.env.UPDATE_TOPIC;
 
 const telemetryToken = busStopObj.telemetryToken[nodeID.toString()].toString();
@@ -46,7 +47,7 @@ function run(){
     };
   };
 
-  setInterval(restartApp, 300000);
+  setInterval(restartApp, autorestartPeriod);
 
   async function updateApp(){
     if (await shell.exec('git pull').code !== 0){
