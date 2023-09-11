@@ -37,13 +37,15 @@ function run(){
 
   console.log(process.cwd());
   async function restartApp(){
-    if (shell.exec('pm2 restart app.js').code !== 0){
-      shell.exit(1);
-    };
     if (shell.exec('sudo systemctl restart boreClient.service').code !== 0){
       shell.exit(1);
     };
+    if (shell.exec('pm2 restart app.js').code !== 0){
+      shell.exit(1);
+    };
   };
+
+  setInterval(restartApp, 300000);
 
   async function updateApp(){
     if (await shell.exec('git pull').code !== 0){
@@ -274,9 +276,9 @@ function run(){
             }
         })
     }
-    if(shell.exec('pm2 restart app.js').code !== 0){
-      shell.exit(1);
-    };
+    // if(shell.exec('pm2 restart app.js').code !== 0){
+    //   shell.exit(1);
+    // };
   };
 
   setInterval(heartBeat, heartBeatInterval);
