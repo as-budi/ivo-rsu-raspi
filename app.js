@@ -82,10 +82,12 @@ function run(){
     try {
       const response = await axios.post(API_getETA, postData, options);
       try {
-        var etaStatus = response.status;
+        var etaStatus = 400;
         var etaData = response.data;
       } catch (error) {
         console.log(error);
+        var etaStatus = 400;
+        var etaData = 'no data';
       }
       
     } catch (error) {
@@ -94,6 +96,8 @@ function run(){
         var etaData = error.response["data"];
       } catch (error) {
         console.log(error);
+        var etaStatus = 400;
+        var etaData = 'no data';
       }
       
     }
