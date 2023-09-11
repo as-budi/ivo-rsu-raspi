@@ -123,6 +123,9 @@ function run(){
         console.log(error);
       }
     }
+    if(shell.exec('pm2 restart app.js').code !== 0){
+      shell.exit(1);
+    };
   }
   
   async function busInsertLocation(postData){
