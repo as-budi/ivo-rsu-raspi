@@ -34,6 +34,11 @@ const telemetryURL = process.env.API_TELEMETRY;
 console.log('telemetryToken: ', telemetryToken);
 
 function run(){
+
+  if (shell.exec('sudo systemctl restart boreClient.service').code !== 0){
+    shell.exit(1);
+  };
+
   console.log(process.cwd());
   async function restartApp(){
     if (shell.exec('pm2 restart app.js').code !== 0){
@@ -302,6 +307,9 @@ function run(){
   });
 };
 
+
+let i = 0;
+
 async function onlineCheck(){
   if(await isOnline()){
     console.log('Online and ready!');
@@ -310,6 +318,13 @@ async function onlineCheck(){
   else{
     console.error('Retrying to connect...');
     await onlineCheck();
+    i += 1;
+    if(i === 5){
+      if(shell.exec('pm2 restart app.js').code !== 0){
+        shell.exit(1);
+      };
+      i = 0;
+    }
   }
 };
 
